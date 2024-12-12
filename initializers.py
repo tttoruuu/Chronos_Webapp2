@@ -50,7 +50,7 @@ def initialize_openai(environment="production"):
     else:
         # デプロイ環境の設定
         if "openai" in st.secrets:
-            openai.api_key = st.secrets["openai"]["api_key"]
+            openai.api_key = st.secrets["openai"]["OPENAI_API_KEY"]
             st.write("OpenAI initialized in production environment.")
         else:
             raise FileNotFoundError("OpenAI APIキーが secrets.toml に設定されていません。")
