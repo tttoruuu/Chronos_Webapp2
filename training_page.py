@@ -4,13 +4,19 @@ import openai
 import os
 from initializers import get_firestore_client
 
-#Firestoreからデータを参照
-db = get_firestore_client()
 
 def switch_page(page_name):
     st.session_state["current_page"] = page_name
 
 def training_page():
+    try:#Firestoreからデータを参照
+        db = get_firestore_client()  # クライアントを関数内で取得
+    except RuntimeError as e:
+        st.error(f"Firestore クライアントの初期化エラー: {e}")
+        return
+
+    st.title("トレーニングページ")
+
     uid = st.session_state["user"]["uid"]
     user_ref = db.collection("users").document(uid)
     user_data = user_ref.get().to_dict()

@@ -1,2 +1,5 @@
 .env
 Firestore.json
+__pycache__/
+*.pyc
+*.pyo

@@ -14,7 +14,7 @@ def initialize_firebase(environment="production"):
             if firebase_key_path and os.path.exists(firebase_key_path):
                 cred = credentials.Certificate(firebase_key_path)
                 initialize_app(cred)
-                
+                st.write("Firebase initialized in local environment.")
             else:
                 raise FileNotFoundError(
                     f"Firebaseキーが見つかりません。指定されたパス: {firebase_key_path}"
@@ -25,7 +25,7 @@ def initialize_firebase(environment="production"):
                 firebase_secrets = dict(st.secrets["firebase"])
                 cred = credentials.Certificate(firebase_secrets)
                 initialize_app(cred)
-                
+                st.write("Firebase initialized in production environment.")
             else:
                 raise FileNotFoundError("Firebase 設定が secrets.toml に設定されていません。")
     else:

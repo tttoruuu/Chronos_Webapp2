@@ -22,9 +22,8 @@ ENVIRONMENT = os.getenv("ENVIRONMENT", "production")  # デフォルトは "prod
 
 def app():
     """アプリケーションのメインロジック"""
-    # 初期化
     initialize_firebase(environment=ENVIRONMENT)
-    st.write("Firestore クライアントが初期化されました。")
+    st.write("Firebase 初期化完了")
     initialize_openai(environment=ENVIRONMENT)
 
     # サイドバーでページを選択
