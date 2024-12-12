@@ -1,8 +1,9 @@
 import streamlit as st
-from firebase import db
+from initializers import get_firestore_client
 
 def save_user_data(uid, mbti, habit_goal,name):
     try:
+        db = get_firestore_client()
         user_ref = db.collection("users").document(uid)
         user_ref.set({"mbti": mbti, "habit_goal": habit_goal, "name":name})
         st.success("データが保存されました！")
@@ -10,6 +11,12 @@ def save_user_data(uid, mbti, habit_goal,name):
         st.error(f"データ保存中にエラーが発生しました: {e}")
 
 def user_dashboard():
+    try:
+        db = get_firestore_client()
+    except RuntimeError as e:
+        st.error(f"Firestore クライアントの初期化エラー: {e}")
+        return
+
     st.title("あなたのこと")
 
     uid = st.session_state["user"]["uid"]

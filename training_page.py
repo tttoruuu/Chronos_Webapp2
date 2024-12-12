@@ -1,11 +1,11 @@
-from firebase import db
 import streamlit as st
 from openai import OpenAI
 import openai
 import os
+from initializers import get_firestore_client
 
-# Streamlit SecretsからAPIキーを取得
-OpenAI.api_key = st.secrets["openai"]["OPENAI_API_KEY"]
+#Firestoreからデータを参照
+db = get_firestore_client()
 
 def switch_page(page_name):
     st.session_state["current_page"] = page_name
