@@ -3,11 +3,12 @@ import streamlit as st
 from PIL import Image
 from dotenv import load_dotenv
 import openai
-from firebase_admin import credentials, initialize_app
 import firebase_admin
+from firebase_admin import credentials, initialize_app, firestore
 from initializers import initialize_firebase, initialize_openai
 from user_management import register_user, login_user
 from user_dashboard import user_dashboard
+from user_dashboard_dev import user_dashboard_dev
 from training_page import training_page
 from result_page import result_page
 from login_page import login_page
@@ -27,18 +28,21 @@ def app():
     initialize_openai(environment=ENVIRONMENT)
 
     # サイドバーでページを選択
-    st.sidebar.title("ナビゲーション")
-    page = st.sidebar.radio("ページを選択してください", ["ログイン", "ユーザー情報入力", "トレーニング", "成果"])
+    st.sidebar.title("クロノスクエスト")
+    st.sidebar.header("ナビゲーション")
+    page = st.sidebar.radio("ページを選択してください", ["ログイン", "ユーザー情報入力", "今日のやること", "成果", "Dev専用_時の部屋"])
 
     # ページの表示
     if page == "ログイン":
         login_page()
     elif page == "ユーザー情報入力":
         user_dashboard()
-    elif page == "トレーニング":
+    elif page == "今日のやること":
         training_page()
     elif page == "成果":
         result_page()
+    elif page == "Dev専用_時の部屋":
+        user_dashboard_dev()
 
     # ゆきだまちゃんの表示
     image = Image.open("ゆきだまちゃん.png")

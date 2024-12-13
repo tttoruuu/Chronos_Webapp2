@@ -1,7 +1,11 @@
 from user_management import register_user, login_user
 import streamlit as st
+from datetime import date, datetime
+from initializers import get_firestore_client
 
 def login_page():
+    st.title("クロノスクエスト")
+    
     mode = st.radio("選択してください", ["ログイン", "新規登録"])
 
     #新規登録
@@ -22,4 +26,36 @@ def login_page():
         if st.button("ログイン"):
             success = login_user(email)
             if success:
+                # login_date更新
+
+                try:
+                    db = get_firestore_client()
+                except RuntimeError as e:
+                    st.error(f"Firestore クライアントの初期化エラー: {e}")
+                    return
+
+                # ログイン中のユーザーのUIDを取得
+                uid = st.session_state["user"]["uid"]
+
+                # 今日の日付を取得
+                today = date.today()  # 例: 2024-12-12
+                today_str = today.strftime("%Y-%m-%d")
+
+                # 更新対象のコレクションとドキュメントID
+                collection_name = "users"
+                document_id = uid  # UIDを直接使用して対象のドキュメントを特定
+
+                # ドキュメント参照を取得
+                doc_ref = db.collection(collection_name).document(document_id)
+
+                # ドキュメントが存在するか確認
+                if not doc_ref.get().exists:
+                    st.error(f"ユーザードキュメントが見つかりません (UID: {document_id})")
+                    return
+
+                # フィールドを更新
+                doc_ref.update({"last_login_date": today_str})
+
+                st.write(f"最新ログイン日を {today} に更新完了！")
+
                 st.session_state["page"] = "ユーザー情報入力"  # ログイン後に次のページへ遷移

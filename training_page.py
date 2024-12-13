@@ -5,7 +5,9 @@ import os
 from initializers import get_firestore_client
 from google.cloud import firestore
 import re
-
+from datetime import date, datetime
+import firebase_admin
+from firebase_admin import credentials, initialize_app, firestore
 
 def switch_page(page_name):
     st.session_state["current_page"] = page_name
@@ -23,6 +25,36 @@ def training_page():
     user_ref = db.collection("users").document(uid)
     user_data = user_ref.get().to_dict()
     
+    ### 20241214 3:00 しょうさん追加
+    today = date.today()
+    last_done = user_data.get("last_done_date")
+
+    if last_done is None:
+        st.text("はじめまして！わたしはゆきだま！あなたのがんばりたいことを応援するよ！") 
+    else:
+        last_done = datetime.strptime(last_done, "%Y-%m-%d").date() 
+        done_days_gap = (today - last_done).days
+
+        if done_days_gap == 0:
+            st.text(f"今日のタスクは完了してるよ！もうちょっとがんばってみる？") 
+        elif done_days_gap == 1:
+            st.text(f"毎日がんばってるね！とってもステキだよ！") 
+        elif done_days_gap >= 5:
+            st.text(f"前回のタスク完了から{done_days_gap}日ぶりだね。ゆきだま、会えなくてちょっと寂しかったな・・") 
+        else:
+            st.text(f"前回のタスク完了から{done_days_gap}日ぶりだね。会えてうれしいよ！") 
+    
+    # Firestore のデータを取得して表示
+    name = user_data.get("name")
+    mbti = user_data.get("mbti")
+    keystone_habits = user_data.get("habit_goal")
+
+    # セッション状態の初期化
+    if 'form_submitted' not in st.session_state:
+        st.session_state['form_submitted'] = False
+    if 'done_clicked' not in st.session_state:
+        st.session_state['done_clicked'] = False
+    ###
 
     # Firestoreの既存タスクを取得
     task_ref = db.collection("tasks").document(uid)
@@ -83,7 +115,11 @@ def training_page():
 
         if selected_task:
             available_time = st.slider("今日使える時間は(分)どのくらい？:", 5, 120, 360)
-            if st.button("今日やることの提案を生成"):
+            generate_btn = st.button("今日やることの提案を生成")
+            if generate_btn:
+                st.session_state['form_submitted'] = True
+        
+            if st.session_state['form_submitted']:
                 prompt = (
                     f"タスク: {selected_task}"
                     f"{available_time}分で達成可能な、さらに具体的な提案をしてください。文章は優しいキャラクターが話しかけている口調にしてください。"
@@ -93,5 +129,46 @@ def training_page():
                 for i, detail in enumerate(detailed_plan, 1):
                     st.write(f" {detail}")
 
+                if st.button("DONE!", key="done_button", icon="🔥", use_container_width=True):
+                    st.session_state['done_clicked'] = True
+                    try:
+                        uid = st.session_state["user"]["uid"]
+                        user_ref = db.collection("users").document(uid)
+                        user_data = user_ref.get().to_dict()
 
-    st.button("Done！", on_click=lambda: switch_page("成果"))
+                        today = date.today()
+                        last_done = user_data.get("last_done_date") if user_data else None
+                        done_co = user_data.get("done_count", 0) if user_data else 0
+
+                        if last_done is not None:
+                            last_done = datetime.strptime(last_done, "%Y-%m-%d").date()
+                            done_days_gap = (today - last_done).days
+                            if done_days_gap > 0:
+                                done_co += 1
+                        else:
+                            done_co = 1
+
+                        today_str = today.strftime("%Y-%m-%d")
+
+                        # Firestoreの更新をより明示的に
+                        user_ref.update({
+                            "done_count": done_co,
+                            "last_done_date": today_str
+                        })
+                        
+                        st.session_state['done_message'] = f"Done回数を {done_co}回に、 最新Done日を {today_str} に更新したよ！" 
+                    
+                    except Exception as e:
+                        st.error(f"Firestoreの更新中にエラーが発生しました: {e}")
+
+            # メッセージの表示
+            if 'done_message' in st.session_state and st.session_state['done_clicked']:
+                st.success(st.session_state['done_message'])
+                
+                # リセットボタン
+                if st.button("リセット", key="reset_button", use_container_width=True):
+                    # セッション状態をリセット
+                    st.session_state['done_message'] = None
+                    st.session_state['done_clicked'] = False
+                    st.session_state['form_submitted'] = False
+                    st.rerun()  # ページを再読み込みして状態をリセット
