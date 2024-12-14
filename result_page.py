@@ -2,6 +2,8 @@ import streamlit as st
 from PIL import Image
 import base64
 import random
+from initializers import get_firestore_client
+from datetime import date, datetime
 
 
 # ランダムに表示する応援メッセージ
@@ -63,24 +65,43 @@ def switch_page(page_name):
     st.session_state["current_page"] = page_name
 
 def result_page():
-    st.title('クロノクエスト')
+    try:#Firestoreからデータを参照
+        db = get_firestore_client()  # クライアントを関数内で取得
+    except RuntimeError as e:
+        st.error(f"Firestore クライアントの初期化エラー: {e}")
+        return
+    
+    st.title('成果')
     st.text('')
-
+    
     # 初期化: ページが読み込まれたときに1回だけ実行される
     if "progress" not in st.session_state:
         st.session_state.progress = 3  # 初期値を3%に設定
 
-    days = "1"
-    st.title(f"{days}日目")
+    # Firestore のデータからdone_countを取得
+    uid = st.session_state["user"]["uid"]
+    user_ref = db.collection("users").document(uid)
+    user_data = user_ref.get().to_dict()
+    done_co = user_data.get("done_count")
+
+    if done_co is not None:
+        done_co = done_co
+
+    else:
+        done_co = 0
+
+    # アプリに何日目か表示
+    st.title(f"{done_co}日完了だま！")
+
+    # プログレスバーの値の計算
+    score = done_co / 30 * 100
+    if score >=100:
+        score =100
+    score_int = int(score)
 
     # プログレスバーの表示
     progress_text = ""
-    my_bar = st.progress(st.session_state.progress, text=progress_text)
-
-    # Rerunボタン
-    #if st.button("Rerun"):
-    #    st.session_state.progress = 3  # ボタンが押されたら進捗をリセット
-    #    st.experimental_rerun()
+    my_bar = st.progress(score_int, text=progress_text)
 
     st.text('')
 
@@ -94,35 +115,4 @@ def result_page():
         st.success(random_message)  # メッセージを表示
         st.balloons()  # 風船アニメーション
 
-    with st.form("my_form"):
-        st.text('今日のタスクはどうだった？')
-
-        st.text('難易度')
-        # 3つのカラムを作成
-        col1, col2, col3 = st.columns(3)
-
-        # 各カラムにボタンを配置
-        with col1:
-            button1 = st.form_submit_button("簡単")
-        with col2:
-            button2 = st.form_submit_button("ふつう")
-        with col3:
-            button3 = st.form_submit_button("難しい")
-
-        st.text('楽しさ')
-        # 3つのカラムを作成
-        col1, col2, col3 = st.columns(3)
-
-        # 各カラムにボタンを配置
-        with col1:
-            button1 = st.form_submit_button("とても楽しい")
-        with col2:
-            button2 = st.form_submit_button("ふつうに楽しい")
-        with col3:
-            button3 = st.form_submit_button("楽しくない")
-
-        st.form_submit_button("送信")
-
-
     st.button("戻る", on_click=lambda: switch_page("トレーニング"))
-
