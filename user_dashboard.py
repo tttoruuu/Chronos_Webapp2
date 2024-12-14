@@ -7,8 +7,6 @@ from datetime import date, datetime
 import firebase_admin
 from firebase_admin import credentials, initialize_app, firestore
 
-cred = credentials.Certificate("Firestore.json") 
-#firebase_admin.initialize_app(cred)
 
 def save_user_data(uid, mbti, habit_goal, name):
     try:
