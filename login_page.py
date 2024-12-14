@@ -2,10 +2,21 @@ from user_management import register_user, login_user
 import streamlit as st
 from datetime import date, datetime
 from initializers import get_firestore_client
+from pathlib import Path
+
+# CSSファイルを読み込む関数
+def load_css(file_name):
+    css_path = Path(f"static/{file_name}")
+    with open(css_path, "r") as css_file:
+        st.markdown(f"<style>{css_file.read()}</style>", unsafe_allow_html=True)
+
+# CSSをロード
+load_css("styles.css")
 
 def login_page():
-    st.title("クロノスクエスト")
-    
+    st.markdown('<h1 class="custom-title">クロノスクエスト</h1>', unsafe_allow_html=True)
+    st.write('このアプリは、習慣化の走り出しを応援するアプリです')
+    st.write('ゆきだまちゃんと一緒に素敵な習慣を作ろう！')
     mode = st.radio("選択してください", ["ログイン", "新規登録"])
 
     #新規登録
