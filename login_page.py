@@ -7,7 +7,7 @@ from pathlib import Path
 # CSSファイルを読み込む関数
 def load_css(file_name):
     css_path = Path(f"static/{file_name}")
-    with open(css_path, "r") as css_file:
+    with open(css_path, "r", encoding="utf-8") as css_file:
         st.markdown(f"<style>{css_file.read()}</style>", unsafe_allow_html=True)
 
 # CSSをロード
