@@ -68,7 +68,7 @@ def app():
     st.sidebar.image(
         "ゆきだまちゃん.png",  # ローカルの画像パスまたはURL
         caption="ゆきだまちゃん",
-        use_column_width=True  # サイドバー幅に合わせる
+        use_container_width=True  # サイドバー幅に合わせる
     )
 
     st.sidebar.write("私は雪の妖精！あなたのやりたいことを応援するね！")
