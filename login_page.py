@@ -14,7 +14,7 @@ def load_css(file_name):
 load_css("styles.css")
 
 def login_page():
-    st.markdown('<h1 class="custom-title">クロノスクエスト</h1>', unsafe_allow_html=True)
+    st.markdown('<h1 class="custom-title">クロノクエスト</h1>', unsafe_allow_html=True)
     st.write('このアプリは、習慣化の走り出しを応援するアプリです')
     st.write('ゆきだまちゃんと一緒に素敵な習慣を作ろう！')
     mode = st.radio("選択してください", ["ログイン", "新規登録"])
