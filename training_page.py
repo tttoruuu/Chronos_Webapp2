@@ -113,8 +113,13 @@ def training_page():
         st.subheader("今日やることをリストから選ぶ")
         selected_task = st.radio("リストの中から今日やりたいことを選択してね。さらに具体的な提案をしていくよ:", task_data.get("tasks", []))
 
+
+        # 20241214 22:44だま修正
         if selected_task:
-            available_time = st.slider("今日使える時間は(分)どのくらい？:", 5, 120, 360)
+            available_time = st.selectbox(
+                "今日使える時間はどのくらい？:", 
+                ["5分", "15分", "30分", "1時間", "2-3時間", "4-5時間","6時間以上"]
+                )
             generate_btn = st.button("今日やることの提案を生成")
             if generate_btn:
                 st.session_state['form_submitted'] = True
@@ -122,7 +127,7 @@ def training_page():
             if st.session_state['form_submitted']:
                 prompt = (
                     f"タスク: {selected_task}"
-                    f"{available_time}分で達成可能な、さらに具体的な提案をしてください。文章は優しいキャラクターが話しかけている口調にしてください。"
+                    f"{available_time}で達成可能な、さらに具体的な提案をしてください。文章は優しいキャラクターが話しかけている口調にしてください。"
                 )
                 detailed_plan = generate_tasks(prompt)
                 st.subheader("今日の具体的なプラン")
