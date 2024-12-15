@@ -42,7 +42,6 @@ ENVIRONMENT = os.getenv("ENVIRONMENT", "production")  # デフォルトは "prod
 def app():
     """アプリケーションのメインロジック"""
     initialize_firebase(environment=ENVIRONMENT)
-    st.write("Firebase 初期化完了")
     initialize_openai(environment=ENVIRONMENT)
 
     # サイドバーでタイトルを表示（HTML）

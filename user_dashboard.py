@@ -34,8 +34,6 @@ def user_dashboard():
         st.error("ログインしているユーザーが見つかりません。")
         return
 
-    st.write(f"現在のUID: {st.session_state['user']['uid']}")
-
     user_ref = db.collection("users").document(uid)
     user_data = user_ref.get().to_dict()
 

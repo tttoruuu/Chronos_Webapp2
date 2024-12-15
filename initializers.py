@@ -29,7 +29,7 @@ def initialize_firebase(environment="production"):
             else:
                 raise FileNotFoundError("Firebase 設定が secrets.toml に設定されていません。")
     else:
-        st.write("Firebase app is already initialized.")  # 再初期化をスキップ
+        st.write("")  # 再初期化をスキップ
 
 #Firestoreの初期化（認証・設定）
 def get_firestore_client():
