@@ -115,4 +115,25 @@ def result_page():
         st.success(random_message)  # メッセージを表示
         st.balloons()  # 風船アニメーション
 
-    st.button("戻る", on_click=lambda: switch_page("トレーニング"))
+    if done_co >=30:
+            if st.button("エンディングを見る"):
+                st.title("～エンディング～")
+                st.text("30日間、よく続いたね！本当にステキだま！")
+                st.text("がんばったあなたには、ゆきの国に招待するね！一緒にいこう！")
+                image = Image.open('エンディング01.png')
+                st.image(image, width=800)
+                st.text("")
+                name = user_data.get("name")
+                st.text(f"こうして{name}は、ゆきの国で、")
+                st.text("ゆきだまちゃんたちとクロノス神と一緒に幸せな時間を過ごしましたとさ")
+                st.divider()
+                st.text("   Developed by")
+                st.text("     チーム・クロノス （Tech0 第9期 Step2-2 15班）")
+                st.text("       ゆきち - Matsuoka Yuki")
+                st.text("       ふくだま - Fukuda Mai")
+                st.text("       とーるちゃん - Kobayashi Toru")
+                st.text("       しょうさん - Sasaki Shohei")
+                st.divider()
+                st.text(f"クロノス神とゆきだまちゃんたちに見守られながら、{name}の挑戦はまだまだ続く・・・")
+
+    #st.button("戻る", on_click=lambda: switch_page("トレーニング"))
