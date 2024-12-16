@@ -44,16 +44,30 @@ def app():
     initialize_firebase(environment=ENVIRONMENT)
     initialize_openai(environment=ENVIRONMENT)
 
+    if "current_page" not in st.session_state:
+        # セッションステートにデフォルトページを設定
+        st.session_state["current_page"] = "ログイン"
+
     # サイドバーでタイトルを表示（HTML）
     st.sidebar.markdown('<div class="sidebar-title">クロノクエスト</div>', unsafe_allow_html=True)
 
     # サイドバーでページを選択
     st.sidebar.header("ナビゲーション")
-    page = st.sidebar.radio("ページを選択してください", ["ログイン", "ユーザー情報入力", "今日のやること", "成果", "Dev専用_時の部屋"])
+    sidebar_options = ["ログイン", "ユーザー情報入力", "今日のやること", "成果"]
+    selected_page = st.sidebar.radio("ページを選択してください", sidebar_options, index=sidebar_options.index(st.session_state["current_page"]))
+
+     # サイドバーで選択されたページにセッションステートを更新
+    if selected_page != st.session_state["current_page"]:
+        st.session_state["current_page"] = selected_page
+
+
+    # ページ切り替えのロジック
+    page = st.session_state["current_page"]
 
     # ページの表示
     if page == "ログイン":
-        login_page()
+        if login_page():  # ログイン成功時にTrueを返す
+            st.session_state["current_page"] = "ユーザー情報入力"
     elif page == "ユーザー情報入力":
         user_dashboard()
     elif page == "今日のやること":

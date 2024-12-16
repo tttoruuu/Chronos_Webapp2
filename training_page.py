@@ -8,9 +8,12 @@ import re
 from datetime import date, datetime
 import firebase_admin
 from firebase_admin import credentials, initialize_app, firestore
+import time
 
 def switch_page(page_name):
     st.session_state["current_page"] = page_name
+    st.experimental_rerun()  # ページを再読み込み
+
 
 def training_page():
     try:#Firestoreからデータを参照
@@ -125,17 +128,38 @@ def training_page():
                 st.session_state['form_submitted'] = True
         
             if st.session_state['form_submitted']:
-                prompt = (
-                    f"タスク: {selected_task}"
-                    f"{available_time}で達成可能な、さらに具体的な提案をしてください。文章は優しいキャラクターが話しかけている口調にしてください。"
+                st.subheader("ゆきだまちゃんが作成中...")
+                progress_bar = st.progress(0)
+                status_text = st.empty()
+
+                # AI処理の進捗をシミュレーション
+                progress_bar.progress(10)
+                status_text.text("考え中...")
+
+                request_to_gpt = f"{name}は{mbti}の性格で、{keystone_habits}を習慣化したいと考えています。"f"今日はタスク: {selected_task}を行いたいと思っています。{available_time} 分で達成可能な提案を、段階的に3〜5つに分けて、使う時間も示しながら説明してください。文章は優しいキャラクターがフランクに話しかけている口調にしてください。"
+
+                  # 決めた内容を元にclient.chat.completions.createでchatGPTにリクエスト。オプションとしてmodelにAIモデル、messagesに内容を指定
+                response = openai.chat.completions.create(
+                    model="gpt-4o-mini",
+                    messages=[
+                        {"role": "user", "content": request_to_gpt },
+                    ],
                 )
-                detailed_plan = generate_tasks(prompt)
-                st.subheader("今日の具体的なプラン")
-                for i, detail in enumerate(detailed_plan, 1):
-                    st.write(f" {detail}")
+                # 進捗バーを更新
+                progress_bar.progress(80)
+                status_text.text("いい感じのができそう")
+
+                output_content = response.choices[0].message.content.strip()
+                
+                # 進捗バーを完了状態に更新
+                progress_bar.progress(100)
+                status_text.text("素敵なものできた！！")
+
+                st.write(output_content)
 
                 if st.button("DONE!", key="done_button", icon="🔥", use_container_width=True):
                     st.session_state['done_clicked'] = True
+                    st.session_state["current_page"] = "成果"
                     try:
                         uid = st.session_state["user"]["uid"]
                         user_ref = db.collection("users").document(uid)
@@ -177,3 +201,5 @@ def training_page():
                     st.session_state['done_clicked'] = False
                     st.session_state['form_submitted'] = False
                     st.rerun()  # ページを再読み込みして状態をリセット
+                    
+

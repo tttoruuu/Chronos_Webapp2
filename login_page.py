@@ -7,8 +7,11 @@ from pathlib import Path
 # CSSファイルを読み込む関数
 def load_css(file_name):
     css_path = Path(f"static/{file_name}")
-    with open(css_path, "r", encoding="utf-8") as css_file:
-        st.markdown(f"<style>{css_file.read()}</style>", unsafe_allow_html=True)
+    if css_path.exists():
+        with open(css_path, "r", encoding="utf-8") as css_file:
+            st.markdown(f"<style>{css_file.read()}</style>", unsafe_allow_html=True)
+    else:
+        st.error("CSSファイルが見つかりません！")
 
 # CSSをロード
 load_css("styles.css")
@@ -36,6 +39,7 @@ def login_page():
         password = st.text_input("パスワード", type="password")
         if st.button("ログイン"):
             success = login_user(email)
+
             if success:
                 # login_date更新
 
@@ -70,3 +74,8 @@ def login_page():
                 st.write(f"最新ログイン日を {today} に更新完了！")
 
                 st.session_state["page"] = "ユーザー情報入力"  # ログイン後に次のページへ遷移
+
+                return True  # ログイン成功時にTrueを返す
+            else:
+                st.error("ログイン失敗")
+        return False
