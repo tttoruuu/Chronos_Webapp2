@@ -3,6 +3,7 @@ import streamlit as st
 from datetime import date, datetime
 from initializers import get_firestore_client
 from pathlib import Path
+from PIL import Image
 
 # CSSファイルを読み込む関数
 def load_css(file_name):
@@ -17,7 +18,8 @@ def load_css(file_name):
 load_css("styles.css")
 
 def login_page():
-    st.markdown('<h1 class="custom-title">クロノクエスト</h1>', unsafe_allow_html=True)
+
+
     st.write('このアプリは、習慣化の走り出しを応援するアプリです')
     st.write('ゆきだまちゃんと一緒に素敵な習慣を作ろう！')
     mode = st.radio("選択してください", ["ログイン", "新規登録"])
@@ -74,8 +76,3 @@ def login_page():
                 st.write(f"最新ログイン日を {today} に更新完了！")
 
                 st.session_state["page"] = "ユーザー情報入力"  # ログイン後に次のページへ遷移
-
-                return True  # ログイン成功時にTrueを返す
-            else:
-                st.error("ログイン失敗")
-        return False

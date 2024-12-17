@@ -13,6 +13,13 @@ from training_page import training_page
 from result_page import result_page
 from login_page import login_page
 
+image = Image.open('クロノクエスト1.png')
+# カラムを作成して中央に配置
+col1, col2, col3 = st.columns([1, 2, 1])  # 左:1, 中央:2, 右:1
+
+with col2:  # 真ん中のカラムに画像を表示
+    st.image(image, width=300)
+
 st.markdown(
     """
     <style>
@@ -53,7 +60,7 @@ def app():
 
     # サイドバーでページを選択
     st.sidebar.header("ナビゲーション")
-    sidebar_options = ["ログイン", "ユーザー情報入力", "今日のやること", "成果"]
+    sidebar_options = ["ログイン", "ユーザー情報入力", "今日のやること", "成果","Dev専用_時の部屋"]
     selected_page = st.sidebar.radio("ページを選択してください", sidebar_options, index=sidebar_options.index(st.session_state["current_page"]))
 
      # サイドバーで選択されたページにセッションステートを更新

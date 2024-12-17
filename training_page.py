@@ -90,11 +90,11 @@ def training_page():
         tasks = task_data.get("tasks", [])
         st.subheader("習慣化のリスト")
         st.text("まずこれは前回から引き継いでいるリストだよ。")
-        for i, task in enumerate(tasks, 1):
-            st.write(f" {task}")
+        with st.container(border=True):
+            for i, task in enumerate(tasks, 1):
+                st.write(f" {task}")
     else:
         st.write("まだ習慣化されるリストが登録されていません。リストを生成してください。")
-
 
     if st.button("習慣化リストを生成"):
         name = user_data.get("name")
@@ -113,8 +113,10 @@ def training_page():
             st.error(f"タスクの保存中にエラーが発生しました: {e}")
 
     if task_data:
+        st.divider()
         st.subheader("今日やることをリストから選ぶ")
-        selected_task = st.radio("リストの中から今日やりたいことを選択してね。さらに具体的な提案をしていくよ:", task_data.get("tasks", []))
+        with st.container(border=True):
+            selected_task = st.radio("リストの中から今日やりたいことを選択してね。さらに具体的な提案をしていくよ:", task_data.get("tasks", []))
 
 
         # 20241214 22:44だま修正
